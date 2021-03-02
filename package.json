@@ -1,0 +1,24 @@
+{
+  "name": "instatic",
+  "version": "0.1.0",
+  "description": "Automate Instagram activities with Puppeteer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facilecode/auto-insta.git"
+  },
+  "keywords": [
+    "automation",
+    "puppeteer",
+    "instagram"
+  ],
+  "author": "Delphin Rukundo <delphinrukundo10@gmail.com>, Emmanuel Zakaryan <emmanuelzakaryan@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/facilecode/auto-insta/issues"
+  },
+  "homepage": "https://github.com/facilecode/auto-insta#readme"
+}
