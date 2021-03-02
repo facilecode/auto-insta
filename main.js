@@ -1,25 +1,11 @@
-const pup = require('puppeteer')
+const insta = require('./insta');
 
-pup.launch({
-    headless: false
-})
-.then(async browser => {
+(async () => {
 
-    let url = 'https://www.instagram.com'
+    // initialize the page
+    await insta.initialize();
 
-    // opening page
-    let page = await browser.newPage()
-    await page.goto(url, {waitUntil: 'networkidle2' })
+    // accept the cookies
+    await insta.acceptCookies();
 
-    // accepting cookies
-    const [button] = await page.$x("//button[text()='Accept']")
-    console.log('button -> ', button)
-    await button.click()
-
-    // Log In
-
-    // Go to hashtag page from file.txt
-    
-
-})
-.catch(err => console.log('err - ', err))
+})();
