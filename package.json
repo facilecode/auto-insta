@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/facilecode/auto-insta/issues"
   },
-  "homepage": "https://github.com/facilecode/auto-insta#readme"
+  "homepage": "https://github.com/facilecode/auto-insta#readme",
+  "dependencies": {
+    "puppeteer": "^8.0.0"
+  }
 }
