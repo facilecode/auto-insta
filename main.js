@@ -17,13 +17,15 @@ const password = process.env.INSTA_PASSWORD;
 
     // wait a little so elements appeae
     await insta.page.waitForTimeout(4000);
+
     // refuse save account
 
     // refuse notifications
-    await insta.hashtagPage('python');
-
 
     await insta.goToHashtagPage('python');
+    
+    // like images
+    await insta.likeImages(5);
 
     
 

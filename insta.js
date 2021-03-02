@@ -22,8 +22,13 @@ const insta = {
   },
 
   login: async (username, password) => {
-    let loginBtn = await insta.page.$('button[type="submit"]');
+    // if connection is bad, we should way til elements appear
+    await insta.page.waitForSelector('input[name="username"]');
+    await insta.page.waitForSelector('input[name="password"]');
 
+    let loginBtn = await insta.page.$('button[type="submit"]');
+    
+    // imitate human waiting
     insta.page.waitForTimeout(1000);
 
     await insta.page.type('input[name="username"]', username, {delay: 100});
@@ -38,7 +43,6 @@ const insta = {
     /* Easy way of doing but also easily identifiable as bot
      *     await insta.page.goto("https://www.instagram.com/explore/tags/" + tag + "/")
      */
-
     await insta.page.waitForSelector('input[placeholder="Search"]');
 
     await insta.page.type('input[placeholder="Search"]', '#'+tag, {delay: 100});
@@ -52,9 +56,19 @@ const insta = {
     } else {
         console.log('no hashtag found')
     }
+  },
 
-  }
-  
+  likeImages: async(n) => {
+    await insta.page.waitForSelector('article');
+
+    //const links = await insta.page.evaluate(() => Array.from(document.querySelectorAll("article > div > div > div > div > a > div > div > img"), e => e));
+    const links = await insta.page.$$("article > div > div > div > div > a > div > div > img");
+
+    console.log('links(0) ', links[0]);
+
+    await links[0].click();
+  },
+
 }
 
 module.exports = insta;
