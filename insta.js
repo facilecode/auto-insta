@@ -17,8 +17,23 @@ const insta = {
   },
 
   acceptCookies: async () => {
-    const [button] = await insta.page.$x("//button[text()='Accept']")
-    await button.click()
+    const [button] = await insta.page.$x("//button[text()='Accept']");
+    await button.click();
+  },
+
+  login: async (username, password) => {
+    let loginBtn = await insta.page.$('button[type="submit"]');
+
+    insta.page.waitForTimeout(1000);
+
+    await insta.page.type('input[name="username"]', username, {delay: 100});
+    await insta.page.type('input[name="password"]', password, {delay: 100});
+    
+    
+    await loginBtn.click();
+
+    // debugger;
+
   }
 }
 

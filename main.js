@@ -1,4 +1,8 @@
+require('dotenv').config()
+
 const insta = require('./insta');
+const username = process.env.INSTA_USERNAME;
+const password = process.env.INSTA_PASSWORD;
 
 (async () => {
 
@@ -7,5 +11,12 @@ const insta = require('./insta');
 
     // accept the cookies
     await insta.acceptCookies();
+
+    // login
+    await insta.login(username, password);
+
+    // refuse save account
+
+    // refuse notifications
 
 })();
