@@ -15,8 +15,11 @@ const password = process.env.INSTA_PASSWORD;
     // login
     await insta.login(username, password);
 
+    // wait a little so elements appeae
+    await insta.page.waitForTimeout(4000);
     // refuse save account
 
     // refuse notifications
+    await insta.hashtagPage('python');
 
 })();
