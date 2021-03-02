@@ -1,17 +1,11 @@
-const pup = require('puppeteer')
+const insta = require('./insta');
 
-pup.launch({
-    headless: false
-})
-.then(async browser => {
-    let url = 'https://www.instagram.com'
+(async () => {
 
-    let page = await browser.newPage()
-    await page.goto(url, {waitUntil: 'networkidle2' })
+    // initialize the page
+    await insta.initialize();
 
-    const [button] = await page.$x("//button[text()='Accept']")
-    console.log('button -> ', button)
-    await button.click()
+    // accept the cookies
+    await insta.acceptCookies();
 
-})
-.catch(err => console.log('err - ', err))
+})();
