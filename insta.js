@@ -33,6 +33,26 @@ const insta = {
     await loginBtn.click();
 
     // debugger;
+  },
+
+  goToHashtagPage: async(tag) => {
+    /* Easy way of doing but also easily identifiable as bot
+     *     await insta.page.goto("https://www.instagram.com/explore/tags/" + tag + "/")
+     */
+
+    await insta.page.waitForSelector('input[placeholder="Search"]');
+
+    await insta.page.type('input[placeholder="Search"]', '#'+tag, {delay: 100});
+
+    await insta.page.waitForSelector(`a[href="/explore/tags/${tag}/"]`);
+
+    const link = await insta.page.$(`a[href="/explore/tags/${tag}/"]`);
+    
+    if (link) {
+        await link.click();
+    } else {
+        console.log('no hashtag found')
+    }
 
   }
 }
