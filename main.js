@@ -22,4 +22,9 @@ const password = process.env.INSTA_PASSWORD;
     // refuse notifications
     await insta.hashtagPage('python');
 
+
+    await insta.goToHashtagPage('python');
+
+    
+
 })();
