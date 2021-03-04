@@ -63,10 +63,17 @@ const insta = {
 
     //const links = await insta.page.evaluate(() => Array.from(document.querySelectorAll("article > div > div > div > div > a > div > div > img"), e => e));
     const links = await insta.page.$$("article > div > div > div > div > a > div > div > img");
-
-    console.log('links(0) ', links[0]);
+    //const n_links = links.slice(0, n);
 
     await links[0].click();
+    console.log('clicked');
+    
+    // when image is already liked aria-label = Unlike
+
+    await insta.page.waitForSelector('span>button>div>span>svg');
+
+    const like_button = await insta.page.$$('span>button>div>span>svg');
+    
   },
 
 }
