@@ -63,7 +63,7 @@ const insta = {
    * When we are done liking an image
    * we close the view
    */
-  closeImageView: async() => {
+  closeImagePreview: async() => {
     const closeSvg = await insta.page.$("svg[aria-label='Close']");
     const closeButton = await closeSvg.getProperty('parentNode');
     closeButton.click();
@@ -85,27 +85,77 @@ const insta = {
     
     //const links = await insta.page.evaluate(() => Array.from(document.querySelectorAll("article > div > div > div > div > a > div > div > img"), e => e));
     // const links = await insta.page.$("article > div > div > div > div > a > div > div > img");
-    const links = await insta.page.$$('img[style="object-fit: cover;"]');
     //const n_links = links.slice(0, n);
-    await insta.page.waitForTimeout(2000);
+    await insta.page.waitForTimeout(1000);
     
-    await links[0].click()
-
+    // scroll down
+    await insta.page.mouse.wheel({ deltaY: 1000 });
+    
     await insta.page.waitForTimeout(2000);
 
-    //const res = await insta.page.$eval("svg[height='24']", e => e.outerHTML);
+    const links = await insta.page.$$('img[style="object-fit: cover;"]');
 
-    await insta.isLiked()
+    // make sure that n is not greater than links.length
+    // get n random images from the links images
+    const randomImgIndeces = Array.from({length: n}, () => Math.floor(Math.random() * n));
 
-   //const idAttribute = await page.$eval('.box', e => e.id);
+    // get only unique images
+    const uniqueImg = [...new Set(randomImgIndeces)];
 
-    // scroll down
-    // await insta.page.mouse.wheel({ deltaY: 1000 });
-   
+    
+    // uniqueImg.forEach(async (img) => {
+    //   console.log("================================");
+    //   console.log("img n°: ", img);
+    //   console.log("================================");
+    //   await insta.page.waitForTimeout(2000);
+    //   // like the image
+    //   await insta.likeSingleImage(links[img]);
+
+    //   // wait for 2 seconds
+    //   await insta.page.waitForTimeout(2000);
+      
+    //   // close the image preview
+    //   await insta.closeImagePreview();
+    // });
+
+    if (n < links.length) {
+      for (let i = 0; i < uniqueImg.length; i++) {
+        await insta.page.waitForTimeout(2000);
+        // like the image
+        const isLikable = await insta.likeSingleImage(links[i]);
+
+        console.log("================================");
+        console.log("img n°: ", i+1);
+        console.log("================================");
+
+        if (!isLikable) {
+          await insta.page.waitForTimeout(1000);
+          await insta.closeImagePreview();
+          continue
+        };
+      
+        // wait for 2 seconds
+        await insta.page.waitForTimeout(2000);
+        
+        // close the image preview
+        await insta.closeImagePreview();
+      }
+    } else {
+      console.log("================================");
+      console.error("Please lower the value of n");
+      console.log("================================");
+    };
+
+    // close the page
+    await insta.page.close();
+    // close the browser
+    await insta.browser.close();
+    
+    // debugger;
     // wait for images to load
 
     // All images
-    //document.querySelectorAll('img[style="object-fit: cover;"]')
+    // document.querySelectorAll('img[style="object-fit: cover;"]')
 
     
     // await insta.page.waitForTimeout(2000);
@@ -126,6 +176,30 @@ const insta = {
 
     
   },
+
+  likeSingleImage: async (img) => {
+
+    // open image preview
+    img.click();
+
+    // wait for 2 seconds
+    await insta.page.waitForTimeout(2000);
+
+     /**
+      * by selecting a publication via 'Like' label, 
+      * we ensure that a liked image won't be unliked 
+      * when image is already liked aria-label = Unlike
+      */
+    // await insta.page.waitForSelector("svg[aria-label='Like']");
+    const likeSvg = await insta.page.$("svg[aria-label='Like']");
+
+    if (!likeSvg) return 0;
+
+    const likeButton = await likeSvg.getProperty('parentNode');
+
+    // like the image
+    likeButton.click();
+  }
 
 }
 
