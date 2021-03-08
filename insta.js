@@ -59,21 +59,25 @@ const insta = {
   },
 
   likeImages: async(n) => {
-    await insta.page.waitForSelector('article');
-
+    await insta.page.waitForSelector('img[style="object-fit: cover;"]');
+    
     //const links = await insta.page.evaluate(() => Array.from(document.querySelectorAll("article > div > div > div > div > a > div > div > img"), e => e));
-    const links = await insta.page.$$("article > div > div > div > div > a > div > div > img");
+    // const links = await insta.page.$("article > div > div > div > div > a > div > div > img");
+    const links = await insta.page.$$('img[style="object-fit: cover;"]');
     //const n_links = links.slice(0, n);
-
+    
     await links[0].click();
-    console.log('clicked');
     
     // when image is already liked aria-label = Unlike
-
-    await insta.page.waitForSelector('span>button>div>span>svg');
-
-    const like_button = await insta.page.$$('span>button>div>span>svg');
     
+    await insta.page.waitForTimeout(4000);
+    await insta.page.waitForSelector("svg[aria-label='Like']");
+
+    const likeSvg = await insta.page.$("svg[aria-label='Like']");
+    const likeButton = await likeSvg.getProperty('parentNode');
+    console.log("Like Button", likeButton);
+
+    likeButton.click();
   },
 
 }
