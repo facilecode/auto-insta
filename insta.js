@@ -59,6 +59,16 @@ const insta = {
     }
   },
 
+  /*
+   * When we are done liking an image
+   * we close the view
+   */
+  closeImageView: async() => {
+    const closeSvg = await insta.page.$("svg[aria-label='Close']");
+    const closeButton = await closeSvg.getProperty('parentNode');
+    closeButton.click();
+  },
+
   likeImages: async(n) => {
     await insta.page.waitForSelector('img[style="object-fit: cover;"]');
     
@@ -70,7 +80,7 @@ const insta = {
 
     // scroll down
     await insta.page.mouse.wheel({ deltaY: 1000 });
-    debugger;
+   
     // wait for images to load
 
     // All images
@@ -79,7 +89,6 @@ const insta = {
     
     // await insta.page.waitForTimeout(2000);
     
-    // await links[0].click();
     
     // // when image is already liked aria-label = Unlike
     
