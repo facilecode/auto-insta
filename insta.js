@@ -65,6 +65,12 @@ const insta = {
     // const links = await insta.page.$("article > div > div > div > div > a > div > div > img");
     const links = await insta.page.$$('img[style="object-fit: cover;"]');
     //const n_links = links.slice(0, n);
+    await insta.page.waitForTimeout(2000);
+
+    // scroll down
+    await insta.page.mouse.wheel({ deltaY: 10000 })
+    // wait for images to load
+    await insta.page.waitForTimeout(2000);
     
     await links[0].click();
     
@@ -75,7 +81,6 @@ const insta = {
 
     const likeSvg = await insta.page.$("svg[aria-label='Like']");
     const likeButton = await likeSvg.getProperty('parentNode');
-    console.log("Like Button", likeButton);
 
     likeButton.click();
   },
