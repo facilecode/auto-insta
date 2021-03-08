@@ -77,9 +77,9 @@ const insta = {
     const links = await insta.page.$$('img[style="object-fit: cover;"]');
     //const n_links = links.slice(0, n);
     await insta.page.waitForTimeout(2000);
-
+    
     // scroll down
-    await insta.page.mouse.wheel({ deltaY: 1000 });
+    // await insta.page.mouse.wheel({ deltaY: 1000 });
    
     // wait for images to load
 
@@ -88,7 +88,6 @@ const insta = {
 
     
     // await insta.page.waitForTimeout(2000);
-    
     
     // // when image is already liked aria-label = Unlike
     
