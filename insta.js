@@ -59,6 +59,16 @@ const insta = {
     }
   },
 
+  /*
+   * When we are done liking an image
+   * we close the view
+   */
+  closeImagePreview: async() => {
+    const closeSvg = await insta.page.$("svg[aria-label='Close']");
+    const closeButton = await closeSvg.getProperty('parentNode');
+    closeButton.click();
+  },
+
   likeImages: async(n) => {
     await insta.page.waitForSelector('img[style="object-fit: cover;"]');
     
@@ -82,25 +92,55 @@ const insta = {
     const uniqueImg = [...new Set(randomImgIndeces)];
 
     
-    uniqueImg.forEach((img) => {
-      // like the image
-      insta.likeSingleImage(links[img]);
+    // uniqueImg.forEach(async (img) => {
+    //   console.log("================================");
+    //   console.log("img n°: ", img);
+    //   console.log("================================");
+    //   await insta.page.waitForTimeout(2000);
+    //   // like the image
+    //   await insta.likeSingleImage(links[img]);
 
-      // wait for 2 seconds
-      insta.page.waitForTimeout(2000);
+    //   // wait for 2 seconds
+    //   await insta.page.waitForTimeout(2000);
+      
+    //   // close the image preview
+    //   await insta.closeImagePreview();
+    // });
 
-      // close the image preview
-      // insta.closeImagePreview();
-    });
+    if (n < links.length) {
+      for (let i = 0; i < uniqueImg.length; i++) {
+        await insta.page.waitForTimeout(2000);
+        // like the image
+        const isLikable = await insta.likeSingleImage(links[i]);
 
+        console.log("================================");
+        console.log("img n°: ", i+1);
+        console.log("================================");
 
-    for (let i = 0; i < n; i++) {
-      let randImg = Math.floor(Math.random() * links.length);
+        if (!isLikable) {
+          await insta.page.waitForTimeout(1000);
+          await insta.closeImagePreview();
+          continue
+        };
+      
+        // wait for 2 seconds
+        await insta.page.waitForTimeout(2000);
+        
+        // close the image preview
+        await insta.closeImagePreview();
+      }
+    } else {
+      console.log("================================");
+      console.error("Please lower the value of n");
+      console.log("================================");
+    };
 
-      links[randImg].click();
-    }
+    // close the page
+    await insta.page.close();
+    // close the browser
+    await insta.browser.close();
     
-    debugger;
+    // debugger;
     // wait for images to load
 
     // All images
@@ -109,7 +149,6 @@ const insta = {
     
     // await insta.page.waitForTimeout(2000);
     
-    // await links[0].click();
     
     // // when image is already liked aria-label = Unlike
     
@@ -141,8 +180,11 @@ const insta = {
       * we ensure that a liked image won't be unliked 
       * when image is already liked aria-label = Unlike
       */
-    await insta.page.waitForSelector("svg[aria-label='Like']");
+    // await insta.page.waitForSelector("svg[aria-label='Like']");
     const likeSvg = await insta.page.$("svg[aria-label='Like']");
+
+    if (!likeSvg) return 0;
+
     const likeButton = await likeSvg.getProperty('parentNode');
 
     // like the image
