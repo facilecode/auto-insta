@@ -40,8 +40,9 @@ const insta = {
   },
 
   goToHashtagPage: async(tag) => {
-    /* Easy way of doing but also easily identifiable as bot
-     *     await insta.page.goto("https://www.instagram.com/explore/tags/" + tag + "/")
+    /* 
+     * Easy way of doing but also easily identifiable as bot
+     * await insta.page.goto("https://www.instagram.com/explore/tags/" + tag + "/")
      */
     await insta.page.waitForSelector('input[placeholder="Search"]');
 
@@ -68,21 +69,33 @@ const insta = {
     await insta.page.waitForTimeout(2000);
 
     // scroll down
-    await insta.page.mouse.wheel({ deltaY: 10000 })
+    await insta.page.mouse.wheel({ deltaY: 1000 });
+    debugger;
     // wait for images to load
-    await insta.page.waitForTimeout(2000);
-    
-    await links[0].click();
-    
-    // when image is already liked aria-label = Unlike
-    
-    await insta.page.waitForTimeout(4000);
-    await insta.page.waitForSelector("svg[aria-label='Like']");
 
-    const likeSvg = await insta.page.$("svg[aria-label='Like']");
-    const likeButton = await likeSvg.getProperty('parentNode');
+    // All images
+    //document.querySelectorAll('img[style="object-fit: cover;"]')
 
-    likeButton.click();
+    
+    // await insta.page.waitForTimeout(2000);
+    
+    // await links[0].click();
+    
+    // // when image is already liked aria-label = Unlike
+    
+    // await insta.page.waitForTimeout(4000);
+
+    // /* 
+    //  * by selecting a publication via 'Like' label, 
+    //  * we ensure that a liked image won't be unliked
+    //  */
+    // await insta.page.waitForSelector("svg[aria-label='Like']");
+    // const likeSvg = await insta.page.$("svg[aria-label='Like']");
+    // const likeButton = await likeSvg.getProperty('parentNode');
+
+    // likeButton.click();
+
+    
   },
 
 }
