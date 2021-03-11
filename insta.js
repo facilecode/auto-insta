@@ -180,12 +180,16 @@ const insta = {
      * when image is already liked aria-label = Unlike
      */
     // await insta.page.waitForSelector("svg[aria-label='Like']");
-    const likeSvg = await insta.page.$("svg[aria-label='Like']");
 
-    if (!likeSvg){
-      console.log("already liked");
+    // if the image has already been liked, skip it
+    let likeSvg = await insta.page.$("svg[aria-label='Unlike']");
+
+    if (likeSvg) {
+      console.log('already liked');
       return 0;
-    } 
+    } else {
+      likeSvg = await insta.page.$("svg[aria-label='Like']");
+    }
 
     const likeButton = await likeSvg.getProperty('parentNode');
 
