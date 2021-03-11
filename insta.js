@@ -192,7 +192,7 @@ const insta = {
       */
     // await insta.page.waitForSelector("svg[aria-label='Like']");
 
-    // if the image has been already liked, skip it
+    // if the image has already been liked, skip it
     let likeSvg = await insta.page.$("svg[aria-label='Unlike']");
 
     if (likeSvg) {
