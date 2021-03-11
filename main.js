@@ -22,7 +22,7 @@ const password = process.env.INSTA_PASSWORD;
 
     // refuse notifications
 
-    await insta.goToHashtagPage('python');
+    await insta.goToHashtagPage('javascript');
     
     // like images
     await insta.likeImages(5);

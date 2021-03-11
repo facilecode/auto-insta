@@ -69,6 +69,17 @@ const insta = {
     closeButton.click();
   },
 
+  isLiked: async() => {
+    const res = await insta.page.$eval("svg[height='24']", e => e.outerHTML);
+   
+    if (res.includes('Unlike')) {
+      console.log("already liked");
+    }
+    else{
+     console.log("not liked");
+    }
+  },
+
   likeImages: async(n) => {
     await insta.page.waitForSelector('img[style="object-fit: cover;"]');
     
@@ -148,7 +159,6 @@ const insta = {
 
     
     // await insta.page.waitForTimeout(2000);
-    
     
     // // when image is already liked aria-label = Unlike
     
