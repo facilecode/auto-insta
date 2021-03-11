@@ -64,12 +64,16 @@ const insta = {
    * we close the view
    */
   closeImagePreview: async() => {
+    console.log("In closeImagePreview ...");
     const closeSvg = await insta.page.$("svg[aria-label='Close']");
     const closeButton = await closeSvg.getProperty('parentNode');
+    console.log("closeButton.click() ...");
     closeButton.click();
+    console.log("closeButton clicked ...");
   },
 
   isLiked: async() => {
+    console.log("isLiked ...")
     const res = await insta.page.$eval("svg[height='24']", e => e.outerHTML);
    
     if (res.includes('Unlike')) {
@@ -120,6 +124,7 @@ const insta = {
 
     if (n < links.length) {
       for (let i = 0; i < uniqueImg.length; i++) {
+        console.log("in foor loop");
         await insta.page.waitForTimeout(2000);
         // like the image
         const isLikable = await insta.likeSingleImage(links[i]);
@@ -129,8 +134,11 @@ const insta = {
         console.log("================================");
 
         if (!isLikable) {
+          console.log("not likable");
           await insta.page.waitForTimeout(1000);
+          console.log("closing image preview (if) ...");
           await insta.closeImagePreview();
+          console.log("closed image preview (if)");
           continue
         };
       
@@ -138,7 +146,9 @@ const insta = {
         await insta.page.waitForTimeout(2000);
         
         // close the image preview
+        console.log("closing image preview ...");
         await insta.closeImagePreview();
+        console.log("closed image preview");
       }
     } else {
       console.log("================================");
@@ -146,59 +156,45 @@ const insta = {
       console.log("================================");
     };
 
+    console.log("___ ending task ____");
+
+    /* Protocol Error is thrown */
     // close the page
-    await insta.page.close();
+    //await insta.page.close();
     // close the browser
-    await insta.browser.close();
-    
-    // debugger;
-    // wait for images to load
-
-    // All images
-    // document.querySelectorAll('img[style="object-fit: cover;"]')
-
-    
-    // await insta.page.waitForTimeout(2000);
-    
-    // // when image is already liked aria-label = Unlike
-    
-    // await insta.page.waitForTimeout(4000);
-
-    // /* 
-    //  * by selecting a publication via 'Like' label, 
-    //  * we ensure that a liked image won't be unliked
-    //  */
-    // await insta.page.waitForSelector("svg[aria-label='Like']");
-    // const likeSvg = await insta.page.$("svg[aria-label='Like']");
-    // const likeButton = await likeSvg.getProperty('parentNode');
-
-    // likeButton.click();
-
+    //await insta.browser.close();
     
   },
 
   likeSingleImage: async (img) => {
-
     // open image preview
+    console.log("opening image");
     img.click();
-
+    console.log("opened");
     // wait for 2 seconds
     await insta.page.waitForTimeout(2000);
-
-     /**
-      * by selecting a publication via 'Like' label, 
-      * we ensure that a liked image won't be unliked 
-      * when image is already liked aria-label = Unlike
-      */
+    console.log("waited 2 secs");
+    /*
+     * by selecting a publication via 'Like' label, 
+     * we ensure that a liked image won't be unliked 
+     * when image is already liked aria-label = Unlike
+     */
     // await insta.page.waitForSelector("svg[aria-label='Like']");
     const likeSvg = await insta.page.$("svg[aria-label='Like']");
 
-    if (!likeSvg) return 0;
+    if (!likeSvg){
+      console.log("already liked");
+      return 0;
+    } 
 
     const likeButton = await likeSvg.getProperty('parentNode');
 
     // like the image
+    console.log("liking ...");
     likeButton.click();
+    await insta.page.waitForTimeout(1000);
+    console.log("done liked");
+
   }
 
 }

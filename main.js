@@ -22,11 +22,10 @@ const password = process.env.INSTA_PASSWORD;
 
     // refuse notifications
 
-    await insta.goToHashtagPage('javascript');
+    await insta.goToHashtagPage('gyumritheatre');
     
     // like images
     await insta.likeImages(5);
 
-    
 
 })();
