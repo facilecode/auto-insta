@@ -39,7 +39,7 @@ const password = process.env.INSTA_PASSWORD;
 
         await insta.goToHashtagPage(tags[i]);
         // like images
-        await insta.likeImages(5);
+        await insta.likeImages(1);
     }
     
     

@@ -14,6 +14,9 @@ const insta = {
     insta.page = await insta.browser.newPage();
     await insta.page.setDefaultNavigationTimeout(0);
     await insta.page.goto(BASE_URL, { waitUntil: 'networkidle2' });
+
+    // wait for the cookies to appear
+    await insta.page.waitForTimeout(2000);
   },
 
   acceptCookies: async () => {
@@ -86,6 +89,14 @@ const insta = {
     else{
      console.log("isLiked(): not liked");
     }
+  },
+
+  /*
+   * checking if an account is private 
+   * while visiting the account from comments
+   */
+  isAccountPrivate: async () => {
+    
   },
 
   likeImages: async(n) => {
@@ -199,6 +210,8 @@ const insta = {
 
     if (likeSvg) {
       console.log('already liked');
+      // only like comments of the image if image is liked
+      //await insta.likeImageComments(10);
       return 0;
     } else {
       likeSvg = await insta.page.$("svg[aria-label='Like']");
@@ -212,7 +225,23 @@ const insta = {
     await insta.page.waitForTimeout(1000);
     console.log("done liked");
 
+    // like comments of the image
     await insta.likeImageComments(2);
+
+    // get commented accounts
+    /*
+     * document.querySelectorAll('div > a > img[data-testid="user-avatar"]')
+     * returns a list of accounts that commented the publication
+     * if the author has added a bio then first 2 elements are author's accounts
+     * otherwise, only the first value is the author's account
+     */
+
+    const accounts = await insta.page.$$('div > a > img[data-testid="user-avatar"]');
+    console.log('accounts ', accounts);
+
+    const accountSVG = await accounts[2].getProperty('parentNode');
+
+    accountSVG.click();
   }
 
 }
