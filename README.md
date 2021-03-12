@@ -5,6 +5,6 @@
 ## Functionalities
 
 * Like n images with a list of #hashtags (OK)
-* Like n comments of n images with #hashtag (In Progress)
+* Like n comments of n images with #hashtag (OK)
 * Follow n accounts that commented n images with #hashtag (In Progress)
 * Like n images of accounts n accounts that commented n images with #hashtag (In Progress)
