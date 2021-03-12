@@ -81,10 +81,10 @@ const insta = {
     const res = await insta.page.$eval("svg[height='24']", e => e.outerHTML);
    
     if (res.includes('Unlike')) {
-      console.log("already liked");
+      console.log("isLiked(): already liked");
     }
     else{
-     console.log("not liked");
+     console.log("isLiked(): not liked");
     }
   },
 
@@ -107,25 +107,11 @@ const insta = {
     // get n random images from the links images
     const randomImgIndeces = Array.from({length: n}, () => Math.floor(Math.random() * n));
 
-    // get only unique images
+    // remove duplicate indexes with Set()
     const uniqueImg = [...new Set(randomImgIndeces)];
 
-    // uniqueImg.forEach(async (img) => {
-    //   console.log("================================");
-    //   console.log("img n°: ", img);
-    //   console.log("================================");
-    //   await insta.page.waitForTimeout(2000);
-    //   // like the image
-    //   await insta.likeSingleImage(links[img]);
-
-    //   // wait for 2 seconds
-    //   await insta.page.waitForTimeout(2000);
-      
-    //   // close the image preview
-    //   await insta.closeImagePreview();
-    // });
-
     if (n < links.length) {
+      // forEach doesn't work
       for (let i = 0; i < uniqueImg.length; i++) {
         console.log("in foor loop");
         await insta.page.waitForTimeout(2000);
@@ -169,6 +155,30 @@ const insta = {
     
   },
 
+  /*
+   * This function is called when a publication is previewed
+   * we like first n comments
+   */
+  likeImageComments: async (n) => {
+    console.log('likeImageComments()');
+    const commentSvgs = await insta.page.$$("svg[aria-label='Like']");
+    console.log("commentsSVGs length ", commentSvgs.length);
+
+    for (let i=0; i<n; i++) {
+      console.log('comment n°:', i);
+      // if we want to like 5 comments while there are only 2
+      if (i < commentSvgs.length){
+        let likeButton = await commentSvgs[i].getProperty('parentNode');
+        likeButton.click();
+        await insta.page.waitForTimeout(1000);
+      }
+      else{
+        console.log('No more comments to like');
+        return
+      }
+    }
+  },
+
   likeSingleImage: async (img) => {
     // open image preview
     console.log("opening image");
@@ -202,6 +212,7 @@ const insta = {
     await insta.page.waitForTimeout(1000);
     console.log("done liked");
 
+    await insta.likeImageComments(2);
   }
 
 }
