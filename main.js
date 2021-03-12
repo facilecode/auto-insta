@@ -21,11 +21,20 @@ const password = process.env.INSTA_PASSWORD;
     // refuse save account
 
     // refuse notifications
-
-    await insta.goToHashtagPage('gyumritheatre');
+    const tags = ['gyumritheatre', 'javascript', 'python'];
     
+    //await insta.goToHashtagPage(tags[0]);
     // like images
-    await insta.likeImages(5);
+    //await insta.likeImages(5);
+    
+    for (let i=0; i<tags.length; i++) {
+        console.log('tag ', tags[i]);
 
+        await insta.goToHashtagPage(tags[i]);
+        // like images
+        await insta.likeImages(5);
+    }
+    
+    
 
 })();

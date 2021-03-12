@@ -72,8 +72,12 @@ const insta = {
     console.log("closeButton clicked ...");
   },
 
+  /*
+   * a function to check whether opened image is liked or not
+   */
   isLiked: async() => {
     console.log("isLiked ...")
+    // image's like button svg is always bigger that those of comments
     const res = await insta.page.$eval("svg[height='24']", e => e.outerHTML);
    
     if (res.includes('Unlike')) {
@@ -106,7 +110,6 @@ const insta = {
     // get only unique images
     const uniqueImg = [...new Set(randomImgIndeces)];
 
-    
     // uniqueImg.forEach(async (img) => {
     //   console.log("================================");
     //   console.log("img n°: ", img);
