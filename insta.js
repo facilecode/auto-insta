@@ -78,16 +78,18 @@ const insta = {
   /*
    * a function to check whether opened image is liked or not
    */
-  isLiked: async() => {
+  isImageLiked: async() => {
     console.log("isLiked ...")
     // image's like button svg is always bigger that those of comments
     const res = await insta.page.$eval("svg[height='24']", e => e.outerHTML);
    
     if (res.includes('Unlike')) {
       console.log("isLiked(): already liked");
+      return true;
     }
     else{
      console.log("isLiked(): not liked");
+     return false;
     }
   },
 
