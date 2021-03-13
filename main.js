@@ -26,22 +26,21 @@ const password = process.env.INSTA_PASSWORD;
     // TO-DO
 
     // read hashtags from file
-    let tags = fs.readFileSync('hashtags.txt').toString().split('\n');
-    tags = tags.map(tag => tag.replace(/(\r\n|\n|\r)/gm, ""));
-    console.log('hashtags ', tags);
+    let rawData = fs.readFileSync('config.json');
+    let config = JSON.parse(rawData);
+    console.log('config ', config);
     
     //await insta.goToHashtagPage(tags[0]);
     // like images
     //await insta.likeImages(5);
     
-    for (let i=0; i<tags.length; i++) {
-        console.log('tag ', tags[i]);
+    for (let i=0; i<config.tags.length; i++) {
+        console.log('tag ', config.tags[i]);
 
-        await insta.goToHashtagPage(tags[i]);
+        await insta.goToHashtagPage(config.tags[i]);
         // like images
-        await insta.likeImages(1);
+        await insta.likeImages(config.likes);
     }
     
     
-
 })();
