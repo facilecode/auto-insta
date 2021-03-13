@@ -96,7 +96,24 @@ const insta = {
    * while visiting the account from comments
    */
   isAccountPrivate: async () => {
-    
+    /* 
+     * This Account is Private is in a 'h2'
+     * We get all 'h2' elements and check text
+     */
+    console.log('checking if private');
+    let elements = await insta.page.$$('h2');
+    //console.log('elements ', elements)
+
+    for (let i=0; i<elements.length; i++) {
+      let obj = await elements[i].getProperty('innerText');
+      console.log('text ', obj._remoteObject.value);
+
+      if (obj._remoteObject.value == "This Account is Private") {
+        return true;
+      }
+
+      return false;
+    }
   },
 
   likeImages: async(n) => {
@@ -242,6 +259,11 @@ const insta = {
     const accountSVG = await accounts[2].getProperty('parentNode');
 
     accountSVG.click();
+
+    await insta.page.waitForTimeout(3000); 
+
+    let isPrivate = await insta.isAccountPrivate();
+    console.log('isPrivate ', isPrivate);
   }
 
 }
