@@ -73,22 +73,24 @@ const insta = {
     console.log("closeButton.click() ...");
     closeButton.click();
     console.log("closeButton clicked ...");
+    await insta.page.waitForTimeout(2000);
   },
 
   /*
    * a function to check whether opened image is liked or not
+   * return [bool, svgElement]
    */
   isImageLiked: async() => {
-    console.log("isLiked ...")
+    console.log("isImageLiked() ...")
     // image's like button svg is always bigger that those of comments
-    const res = await insta.page.$eval("svg[height='24']", e => e.outerHTML);
+    const svgElement = await insta.page.$eval("svg[height='24']", e => e.outerHTML);
    
-    if (res.includes('Unlike')) {
-      console.log("isLiked(): already liked");
+    if (svgElement.includes('Unlike')) {
+      console.log("isImageLiked(): already liked");
       return true;
     }
     else{
-     console.log("isLiked(): not liked");
+     console.log("isImageLiked(): not liked");
      return false;
     }
   },
@@ -118,7 +120,7 @@ const insta = {
     }
   },
 
-  likeImages: async(n) => {
+  likeImagesAndComments: async(nLikes, nComments) => {
     await insta.page.waitForSelector('img[style="object-fit: cover;"]');
     
     //const links = await insta.page.evaluate(() => Array.from(document.querySelectorAll("article > div > div > div > div > a > div > div > img"), e => e));
@@ -131,43 +133,43 @@ const insta = {
     
     await insta.page.waitForTimeout(2000);
 
-    const links = await insta.page.$$('img[style="object-fit: cover;"]');
+    const imageLinks = await insta.page.$$('img[style="object-fit: cover;"]');
 
     // make sure that n is not greater than links.length
     // get n random images from the links images
-    const randomImgIndeces = Array.from({length: n}, () => Math.floor(Math.random() * n));
+    const randomImgIndeces = Array.from({length: nLikes}, () => Math.floor(Math.random() * nLikes));
 
     // remove duplicate indexes with Set()
     const uniqueImg = [...new Set(randomImgIndeces)];
 
-    if (n < links.length) {
+    /*
+     * Now that we have a random set of publications
+     * we are going to do some actions
+     */
+    if (nLikes < imageLinks.length) {
       // forEach doesn't work
       for (let i = 0; i < uniqueImg.length; i++) {
         console.log("in foor loop");
-        await insta.page.waitForTimeout(2000);
-        // like the image
-        const isLikable = await insta.likeSingleImage(links[i]);
-
         console.log("================================");
         console.log("img n°: ", i+1);
         console.log("================================");
 
-        if (!isLikable) {
-          console.log("not likable");
-          await insta.page.waitForTimeout(1000);
-          console.log("closing image preview (if) ...");
-          await insta.closeImagePreview();
-          console.log("closed image preview (if)");
-          continue
-        };
-      
-        // wait for 2 seconds
-        await insta.page.waitForTimeout(2000);
+        // open image preview
+        await insta.openImage(imageLinks[i]);
+
+        // check if the image is already liked or not
+        const isLiked = await insta.isImageLiked();
         
+        if (!isLiked) {
+          await insta.likeImage();
+        }
+        else{
+          console.log('Already liked, skipping');
+          await insta.page.waitForTimeout(1000);
+        }
         // close the image preview
-        console.log("closing image preview ...");
         await insta.closeImagePreview();
-        console.log("closed image preview");
+
       }
     } else {
       console.log("================================");
@@ -189,7 +191,7 @@ const insta = {
    * This function is called when a publication is previewed
    * we like first n comments
    */
-  likeImageComments: async (n) => {
+  likeComments: async (n) => {
     console.log('likeImageComments()');
     const commentSvgs = await insta.page.$$("svg[aria-label='Like']");
     console.log("commentsSVGs length ", commentSvgs.length);
@@ -207,6 +209,23 @@ const insta = {
         return
       }
     }
+  },
+
+  openImage: async (imageLink) => {
+    console.log("opening image");
+    imageLink.click();
+    await insta.page.waitForTimeout(2000);
+    console.log("opened");
+  },
+
+  likeImage: async () => {
+    let likeSvg = await insta.page.$("svg[height='24']");
+    let likeButton = await likeSvg.getProperty("parentNode");
+
+    console.log("liking ...");
+    likeButton.click();
+    await insta.page.waitForTimeout(1000);
+    console.log("done liked");
   },
 
   likeSingleImage: async (img) => {
@@ -244,9 +263,10 @@ const insta = {
     await insta.page.waitForTimeout(1000);
     console.log("done liked");
 
+    /* replaced above in the loop
     // like comments of the image
-    await insta.likeImageComments(2);
-
+    await insta.likeComments(2);
+    */
     // get commented accounts
     /*
      * document.querySelectorAll('div > a > img[data-testid="user-avatar"]')
