@@ -2,9 +2,9 @@
     "login": "",
     "passwod": "",
     "tags": [
-        "ford",
-        "porsche"
+        "detroit"
     ],
-    "likes": 5,
-    "commentLikes": 2
+    "likesPerTag": 5,
+    "likeCommentsPerTag": 2,
+    "likeAgain": false
 }

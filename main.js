@@ -6,9 +6,12 @@ const username = process.env.INSTA_USERNAME;
 const password = process.env.INSTA_PASSWORD;
 
 (async () => {
-    
+    // parse config file
+    let rawData = fs.readFileSync('config.json');
+    let config = JSON.parse(rawData);
+    console.log('config ', config);
     // initialize the page
-    await insta.initialize();
+    await insta.initialize(config);
 
     // accept the cookies
     await insta.acceptCookies();
@@ -25,10 +28,6 @@ const password = process.env.INSTA_PASSWORD;
     // refuse notifications
     // TO-DO
 
-    // read hashtags from file
-    let rawData = fs.readFileSync('config.json');
-    let config = JSON.parse(rawData);
-    console.log('config ', config);
     
     //await insta.goToHashtagPage(tags[0]);
     // like images
@@ -39,7 +38,7 @@ const password = process.env.INSTA_PASSWORD;
 
         await insta.goToHashtagPage(config.tags[i]);
         // like images
-        await insta.likeImagesAndComments(config.likes, config.comments);
+        await insta.likeImagesAndComments();
         // like comments
     }
     

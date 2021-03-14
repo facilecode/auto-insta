@@ -4,18 +4,23 @@ const BASE_URL = 'https://www.instagram.com';
 const insta = {
   browser: null,
   page: null,
+  //likesPerTag: null,
+  //likeCommentsPerTag: null,
 
-  initialize: async () => {
+  initialize: async (config) => {
     insta.browser = await puppeteer.launch({
       headless: false,
       defaultViewport: null,
     });
-
+    // init vars
+    insta.likesPerTag = config.likesPerTag;
+    insta.likeCommentsPerTag = config.likeCommentsPerTag;
+  
     insta.page = await insta.browser.newPage();
     await insta.page.setDefaultNavigationTimeout(0);
     await insta.page.goto(BASE_URL, { waitUntil: 'networkidle2' });
 
-    // wait for the cookies to appear
+    // wait for cookies to appear
     await insta.page.waitForTimeout(2000);
   },
 
@@ -70,7 +75,6 @@ const insta = {
     console.log("In closeImagePreview ...");
     const closeSvg = await insta.page.$("svg[aria-label='Close']");
     const closeButton = await closeSvg.getProperty('parentNode');
-    console.log("closeButton.click() ...");
     closeButton.click();
     console.log("closeButton clicked ...");
     await insta.page.waitForTimeout(2000);
@@ -78,7 +82,7 @@ const insta = {
 
   /*
    * a function to check whether opened image is liked or not
-   * return [bool, svgElement]
+   * return bool
    */
   isImageLiked: async() => {
     console.log("isImageLiked() ...")
@@ -95,6 +99,13 @@ const insta = {
     }
   },
 
+    /*
+     * a function to check whether a comment is liked or not
+     * return bool
+     */
+    isCommentLiked: async() => {
+      // to-do
+    },
   /*
    * checking if an account is private 
    * while visiting the account from comments
@@ -120,13 +131,13 @@ const insta = {
     }
   },
 
-  likeImagesAndComments: async(nLikes, nComments) => {
+  likeImagesAndComments: async() => {
     await insta.page.waitForSelector('img[style="object-fit: cover;"]');
     
     //const links = await insta.page.evaluate(() => Array.from(document.querySelectorAll("article > div > div > div > div > a > div > div > img"), e => e));
     // const links = await insta.page.$("article > div > div > div > div > a > div > div > img");
     //const n_links = links.slice(0, n);
-    await insta.page.waitForTimeout(1000);
+    await insta.page.waitForTimeout(2000);
     
     // scroll down
     await insta.page.mouse.wheel({ deltaY: 1000 });
@@ -134,48 +145,56 @@ const insta = {
     await insta.page.waitForTimeout(2000);
 
     const imageLinks = await insta.page.$$('img[style="object-fit: cover;"]');
+    const nbTagImages = imageLinks.length;
+    // if there are less images than we expect to like
+    let uniqueImg = [];
 
-    // make sure that n is not greater than links.length
-    // get n random images from the links images
-    const randomImgIndeces = Array.from({length: nLikes}, () => Math.floor(Math.random() * nLikes));
-
-    // remove duplicate indexes with Set()
-    const uniqueImg = [...new Set(randomImgIndeces)];
+    if (nbTagImages < insta.likesPerTag) {
+      console.log('Not enough samples to like, generating simple array');
+      uniqueImg = [...Array(nbTagImages).keys()];
+    }
+    else {
+      // get n random images from the links images
+      const randomImgIndexes = Array.from({length: insta.likesPerTag*2}, () => Math.floor(Math.random() * nbTagImages));
+      // remove duplicate indexes with Set()
+      uniqueImg = [...new Set(randomImgIndexes)];
+      uniqueImg = uniqueImg.slice(0, insta.likesPerTag);
+      console.log('random ', randomImgIndexes);
+      console.log('unique ', uniqueImg, 'unique.length ', uniqueImg.length);
+    }
 
     /*
      * Now that we have a random set of publications
      * we are going to do some actions
      */
-    if (nLikes < imageLinks.length) {
-      // forEach doesn't work
-      for (let i = 0; i < uniqueImg.length; i++) {
-        console.log("in foor loop");
-        console.log("================================");
-        console.log("img n°: ", i+1);
-        console.log("================================");
+    console.log(uniqueImg.length)
+    for (let i = 0; i < uniqueImg.length; i++) {
+      console.log("in foor loop");
+      console.log("================================");
+      console.log("img n°: ", i+1);
+      console.log("================================");
 
-        // open image preview
-        await insta.openImage(imageLinks[i]);
+      // open image preview
+      await insta.openImage(imageLinks[i]);
 
-        // check if the image is already liked or not
-        const isLiked = await insta.isImageLiked();
-        
-        if (!isLiked) {
-          await insta.likeImage();
-        }
-        else{
-          console.log('Already liked, skipping');
-          await insta.page.waitForTimeout(1000);
-        }
-        // close the image preview
-        await insta.closeImagePreview();
-
+      // check if the image is already liked or not
+      const isLiked = await insta.isImageLiked();
+      
+      // like image
+      if (!isLiked) {
+        await insta.likeImage();
       }
-    } else {
-      console.log("================================");
-      console.error("Please lower the value of n");
-      console.log("================================");
-    };
+      else{
+        console.log('Already liked, skipping');
+        await insta.page.waitForTimeout(1000);
+      }
+      
+      // like comments
+      await insta.likeComments();
+
+      // close the image preview
+      await insta.closeImagePreview();
+    }
 
     console.log("___ ending task ____");
 
@@ -191,12 +210,12 @@ const insta = {
    * This function is called when a publication is previewed
    * we like first n comments
    */
-  likeComments: async (n) => {
+  likeComments: async () => {
     console.log('likeImageComments()');
     const commentSvgs = await insta.page.$$("svg[aria-label='Like']");
     console.log("commentsSVGs length ", commentSvgs.length);
 
-    for (let i=0; i<n; i++) {
+    for (let i=0; i<insta.likeCommentsPerTag; i++) {
       console.log('comment n°:', i);
       // if we want to like 5 comments while there are only 2
       if (i < commentSvgs.length){
