@@ -22,24 +22,27 @@ const insta = {
     await insta.page.goto(BASE_URL, { waitUntil: 'networkidle2' });
 
     // wait for cookies to appear
-    await insta.page.waitForTimeout(2000);
+    await insta.page.waitForTimeout(5000);
   },
 
   acceptCookies: async () => {
-    const [button] = await insta.page.$x("//button[text()='Accept']");
+    const [button] = await insta.page.$x("//button[text()='Accept All']");
     await button.click();
   },
 
   login: async (username, password) => {
+    console.log("INTO login")
     // if connection is bad, we should way til elements appear
     await insta.page.waitForSelector('input[name="username"]');
     await insta.page.waitForSelector('input[name="password"]');
+    console.log("awaited for username/passxord")
 
     let loginBtn = await insta.page.$('button[type="submit"]');
-    
+    console.log("awaited for login button")
     // imitate human waiting
     insta.page.waitForTimeout(1000);
 
+    console.log("typing inputs ", username, password)
     await insta.page.type('input[name="username"]', username, {delay: 100});
     await insta.page.type('input[name="password"]', password, {delay: 100});
     
